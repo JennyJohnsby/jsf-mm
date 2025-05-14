@@ -1,101 +1,80 @@
 import React, { useState } from "react";
-import logo from "../../assets/ChatGPT Image 12. mai 2025, 19_28_06.png";
-
+import { Link } from "react-router-dom";
+import { useCartStore } from "../../hooks/useCartStore";
+import { ShoppingCart } from "lucide-react";
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const cart = useCartStore((state) => state.cart);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Placeholder for the navigation action (you can add your custom logic)
-  const handleNavigation = (section: string) => {
-    console.log(`Navigating to ${section}`);
-    // You can add custom scrolling or other logic here instead of using links
-  };
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="bg-purple-600 text-white">
-      <div className="max-w-screen-xl mx-auto p-4 flex items-center justify-between">
-        {/* Logo */}
-        <img
-  src={logo}  // The imported image
-  alt="Mystic Market Logo"
-  className="w-40 h-40"  // Set the size of the image
-/>
-
-        <div className="text-2xl font-semibold cursor-pointer" onClick={() => handleNavigation("Home")}>
+    <header className="bg-purple-600 text-white shadow-md sticky top-0 z-50">
+      <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Site Logo / Title */}
+        <Link
+          to="/"
+          className="text-3xl font-extrabold tracking-tight hover:text-purple-200 transition-colors"
+          onClick={closeMenu}
+        >
           Mystic Market
-        </div>
+        </Link>
 
-        {/* Desktop Menu */}
-        <nav className="hidden md:flex space-x-8">
-          <button
-            onClick={() => handleNavigation("Home")}
-            className="hover:text-purple-300 transition"
-          >
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8 text-base font-medium">
+          <Link to="/" className="hover:text-purple-200 transition-colors">
             Home
-          </button>
-          <button
-            onClick={() => handleNavigation("Products")}
-            className="hover:text-purple-300 transition"
-          >
-            Products
-          </button>
-          <button
-            onClick={() => handleNavigation("About")}
-            className="hover:text-purple-300 transition"
-          >
-            About
-          </button>
-          <button
-            onClick={() => handleNavigation("Contact")}
-            className="hover:text-purple-300 transition"
-          >
+          </Link>
+          <Link to="/contact" className="hover:text-purple-200 transition-colors">
             Contact
-          </button>
+          </Link>
+          <Link
+            to="/cart"
+            className="relative hover:text-purple-200 transition-colors flex items-center"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full shadow-sm">
+                {cartItemCount}
+              </span>
+            )}
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
         <button
           onClick={toggleMenu}
-          className="md:hidden flex items-center space-x-2"
-          aria-label="Toggle Menu"
+          className="md:hidden text-3xl focus:outline-none focus:ring-2 focus:ring-white"
+          aria-label="Toggle menu"
         >
-          <span className="text-xl">☰</span> {/* Hamburger icon */}
+          ☰
         </button>
       </div>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <nav className="md:hidden bg-purple-700 text-white">
-          <div className="flex flex-col items-center space-y-4 p-4">
-            <button
-              onClick={() => handleNavigation("Home")}
-              className="hover:text-purple-300 transition"
-            >
-              Home
-            </button>
-            <button
-              onClick={() => handleNavigation("Products")}
-              className="hover:text-purple-300 transition"
-            >
-              Products
-            </button>
-            <button
-              onClick={() => handleNavigation("About")}
-              className="hover:text-purple-300 transition"
-            >
-              About
-            </button>
-            <button
-              onClick={() => handleNavigation("Contact")}
-              className="hover:text-purple-300 transition"
-            >
-              Contact
-            </button>
-          </div>
+        <nav className="md:hidden bg-purple-500 text-white shadow-inner">
+          <ul className="flex flex-col items-center space-y-4 py-4 text-base font-medium">
+            <li>
+              <Link to="/" onClick={closeMenu} className="hover:text-purple-100 transition-colors">
+                Home
+              </Link>
+            </li>
+            <li>
+              <Link to="/contact" onClick={closeMenu} className="hover:text-purple-100 transition-colors">
+                Contact
+              </Link>
+            </li>
+            <li>
+              <Link to="/cart" onClick={closeMenu} className="hover:text-purple-100 transition-colors">
+                Cart ({cartItemCount})
+              </Link>
+            </li>
+          </ul>
         </nav>
       )}
     </header>

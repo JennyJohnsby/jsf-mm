@@ -1,14 +1,14 @@
-// src/pages/Home.tsx
 import React, { useEffect, useState } from "react";
 import { getProducts } from "../api/products";
 import type { Product } from "../types/productTypes";
-import Header from "../components/layout/Header"; // Import the Header component
+import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
-import ProductCard from "../components/layout/ProductCard"; // Import the new ProductCard component
+import ProductCard from "../components/layout/ProductCard";
+import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
 
   useEffect(() => {
@@ -16,9 +16,9 @@ const Home: React.FC = () => {
       try {
         const data = await getProducts();
         setProducts(data);
-      } catch (err: unknown) {
+      } catch (err) {
         console.error("Error fetching products:", err);
-        setError("Error fetching products. Please try again later.");
+        setError("Failed to load products. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -27,19 +27,39 @@ const Home: React.FC = () => {
     fetchProducts();
   }, []);
 
-  if (loading) return <p>Loading products...</p>;
-  if (error) return <p>{error}</p>;
-
   return (
-    <div className="min-h-screen bg-purple-100">
+    <div className="min-h-screen flex flex-col bg-purple-100">
       <Header />
-    
-      <h1 className="text-3xl font-bold mb-4">All Products</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} /> // Use the ProductCard component
-        ))}
-      </div>
+
+      <main className="flex-grow p-6">
+        <h1 className="text-3xl font-bold mb-6 text-center">All Products</h1>
+
+        {loading && (
+          <div className="text-center text-lg font-medium text-gray-700">
+            Loading products...
+          </div>
+        )}
+
+        {error && (
+          <div className="text-center text-red-500 font-semibold">
+            {error}
+          </div>
+        )}
+
+        {!loading && !error && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <Link
+                key={product.id}
+                to={`/product/${product.id}`}
+                className="hover:opacity-90 transition-opacity duration-200"
+              >
+                <ProductCard product={product} />
+              </Link>
+            ))}
+          </div>
+        )}
+      </main>
 
       <Footer />
     </div>
