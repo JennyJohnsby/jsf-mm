@@ -1,3 +1,5 @@
+// src/types/productTypes.ts
+
 export interface Review {
   author: string;
   comment: string;
@@ -11,6 +13,6 @@ export interface Product {
   imageUrl: string;
   price: number;
   discountedPrice: number;
-  rating: number;
+  rating: number; // Overall rating of the product
   reviews: Review[]; // Array of reviews for the product
 }
